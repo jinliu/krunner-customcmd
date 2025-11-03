@@ -13,7 +13,7 @@ SERVICE = "krunner.customcmd"
 OBJPATH = "/runner" # Default value for X-Plasma-DBusRunner-Path metadata property
 IFACE = "org.kde.krunner1"
 
-CMD_TIMEOUT = 2  # seconds
+CMD_TIMEOUT = 5  # seconds
 
 class Runner(dbus.service.Object):
     def __init__(self):
@@ -41,16 +41,20 @@ class Runner(dbus.service.Object):
         if cmd in self.cmds:
             print("Found command:", cmd, "->", self.cmds[cmd])
             cmd_file_path = self.cmds[cmd]
-            result = subprocess.run([cmd_file_path, fields[1]], capture_output=True, text=True, timeout=CMD_TIMEOUT)
-            if result.returncode != 0:
-                print("Command failed with return code:", result.returncode)
+            try:
+                result = subprocess.run([cmd_file_path, fields[1]], capture_output=True, text=True, timeout=CMD_TIMEOUT)
+                if result.returncode != 0:
+                    print("Command failed with return code:", result.returncode)
+                    return []
+                result_text = result.stdout.strip()
+                print("Command output:", result_text)
+                if len(result_text) == 0:
+                    return []
+                # data, text, icon, type (KRunner::QueryType), relevance (0-1), properties (subtext, category, multiline(bool) and urls)
+                return [("cmd", result_text, "new-command-alarm", 100, 1.0, {})]
+            except subprocess.TimeoutExpired:
+                print("Command timed out")
                 return []
-            result_text = result.stdout.strip()
-            print("Command output:", result_text)
-            if len(result_text) == 0:
-                return []
-            # data, text, icon, type (KRunner::QueryType), relevance (0-1), properties (subtext, category, multiline(bool) and urls)
-            return [("cmd", result_text, "new-command-alarm", 100, 1.0, {})]
         return []
 
     @dbus.service.method(IFACE, out_signature='a(sss)')
