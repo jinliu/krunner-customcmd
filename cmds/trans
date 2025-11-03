@@ -1,0 +1,7 @@
+#!/bin/bash
+
+query="$1"
+
+if [[ "$query" == *\. ]]; then
+    trans -b "$query"
+fi

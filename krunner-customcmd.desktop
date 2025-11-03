@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Custom Command Runner
+Comment=Show output from your custom command
+Type=Service
+Icon=new-command-alarm
+X-KDE-PluginInfo-Author=Jin Liu
+X-KDE-PluginInfo-Email=m.liu.jin@gmail.com
+X-KDE-PluginInfo-Name=krunner-customcmd
+X-KDE-PluginInfo-Version=1.0
+X-KDE-PluginInfo-License=LGPL
+X-KDE-PluginInfo-EnabledByDefault=true
+X-Plasma-API=DBus
+X-Plasma-DBusRunner-Service=krunner.customcmd
